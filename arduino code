@@ -1,0 +1,53 @@
+#include <LiquidCrystal.h>
+
+// Initialize variables
+int OutPut = 13;
+unsigned int frequency = 0;
+LiquidCrystal lcd(4, 6, 7, 8, 9, 10);
+int total = 1000;
+
+void setup() {
+  Serial.begin(9600);
+  lcd.begin(16, 2);
+  lcd.setCursor(0, 0);
+  lcd.print("  Smart Wallet  ");
+  lcd.setCursor(0, 1);
+  lcd.print(" Circuit Digest  ");
+  delay(2000);
+  lcd.clear();
+  pinMode(2, OUTPUT); // S0
+  pinMode(3, OUTPUT); // S1
+  pinMode(11, OUTPUT); // S2
+  pinMode(12, OUTPUT); // S3
+  pinMode(13, INPUT); // OUT
+  digitalWrite(2, HIGH);
+  digitalWrite(3, LOW);
+}
+
+void loop() {
+  // Read sensor value
+  int sensor = digitalRead(A0);
+
+  // Read color sensor values
+  int red1 = red();
+  int blue1 = blue();
+  int green1 = green();
+
+  // Print sensor values to serial monitor
+  Serial.println(red1);
+  Serial.println(blue1);
+  Serial.println(green1);
+  Serial.println("-----------------------------");
+
+  // Check if currency note is detected and decrement total balance
+  if (red1 >= 20 && red1 <= 25 && blue1 >= 30 && blue1 <= 35 && green1 >= 30 && green1 <= 35 && sensor == HIGH) {
+    // Perform action when currency note is detected
+    if (total >= 10) {
+      lcd.setCursor(0, 1);
+      lcd.print("10 Rupees!!!");
+      total = total - 10; // Decrement total balance
+      delay(1500);
+      lcd.clear();
+    }
+  }
+}
